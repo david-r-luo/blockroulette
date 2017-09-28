@@ -132,6 +132,18 @@ contract Roulette {
         pot += buyin;
 
     }
+
+    function withdraw() returns (uint) {
+        if (state == State.Playing) {
+            revert();
+        }
+
+        numOfPlayers -= 1;
+        uint val = playerList[msg.sender].balance;
+        playerList[msg.sender] -= val;
+        msg.sender.transfer(val);
+        return val;
+    }
     
 
 
