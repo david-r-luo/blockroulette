@@ -67,20 +67,13 @@ window.App = {
   join: function() {
 
     var pnum = document.getElementById("playernum");
-    rContract.addPlayer.sendTransaction({gas:10000000});
+    rContract.addPlayer.sendTransaction(account, {from: account, gas:10000000});
   },
 
   spin: function() {
 
     rContract.spinRoulette();
   },
-
-  // cont: function() {
-  //   Roulette.deployed().then(function(instance) {
-  //     roulette = instance;
-  //     return roulette.numOfPlayers.call(account, {from: account});
-  //   }
-  // }
 
   getContract: function() {
     var roulette;
