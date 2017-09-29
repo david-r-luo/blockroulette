@@ -32,7 +32,7 @@ contract Roulette {
     enum State {Lobby, Playing}
     
 
-    function Roulette() {
+    function Roulette() public {
         owner = msg.sender;
         numOfPlayers = 0;
         buyin = 100 wei;
@@ -42,7 +42,7 @@ contract Roulette {
         randHelper = 0;
     }
 
-    function spinRoulette(uint rand) {
+    function spinRoulette(uint rand) public {
         if (numAlive == 1) {
             revert();
         }
@@ -78,7 +78,7 @@ contract Roulette {
 
     }
     
-    function startGame() 
+    function startGame() public
         isOwner(msg.sender)
     {
         if (numOfPlayers != maxPlayers) {
@@ -93,11 +93,11 @@ contract Roulette {
         turn = (uint(block.blockhash(block.number-1))+randHelper) % maxPlayers + 1;
     }
     
-    function getPot() returns (uint) {
+    function getPot() public returns (uint) {
         return pot;
     }
 
-    function setBuyin(uint buy) 
+    function setBuyin(uint buy) public 
         isOwner(msg.sender) 
     {
         if (numOfPlayers != 0) {
@@ -107,11 +107,11 @@ contract Roulette {
         buyin = buy;
     }
 
-    function getBuyin() returns(uint) {
+    function getBuyin() public returns(uint) {
         return buyin;
     }
 
-    function addPlayer(uint rand) payable {
+    function addPlayer(uint rand) public payable {
         if (numOfPlayers >= maxPlayers) revert();
 
         if (state == State.Playing) revert();
@@ -138,7 +138,7 @@ contract Roulette {
 
     }
 
-    function withdraw() returns (uint) {
+    function withdraw() public returns (uint) {
         if (state == State.Playing) {
             revert();
         }
@@ -152,27 +152,15 @@ contract Roulette {
     
 
 
-    function getNumAlive() returns (uint) {
+    function getNumAlive() public returns (uint) {
         return numAlive;
     }
 
-    function getCurrentTurn() returns (uint) {
+    function getCurrentTurn() public returns (uint) {
         return turn;
     } 
 
-    function getOwner() returns (address) {
+    function getOwner() public returns (address) {
         return owner;
-    }
-
-    function getPlayerAddr(uint u) returns (address) {
-        return playerNum[u];
-    }
-
-    function getPlayer(address addr) returns (address, bool, uint, uint, uint) {
-        return (playerList[addr].addr, playerList[addr].alive, playerList[addr].balance, playerList[addr].prevTurn, playerList[addr].nextTurn);
-    }
-
-    function getRandHelper() returns (uint) {
-    	return randHelper;
     }
 }

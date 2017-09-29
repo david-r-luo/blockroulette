@@ -23,17 +23,7 @@ var account;
 window.App = {
   start: function() {
     var self = this;
-    var pnum = document.getElementById("playernum");
-    pnum.innerText = "Number of Players: " + rContract.numOfPlayers;
 
-    var curturn = document.getElementById("currentturn");
-    curturn.innerText = "Current Turn: " + rContract.turn;
-
-    var bin = document.getElementById("buyin");
-    bin.innerText = "Buy-In: " + rContract.buyin;
-
-    var numlive = document.getElementById("numalive");
-    numlive.innerText = "Number of Players: " + rContract.numAlive;
 
     // Bootstrap the MetaCoin abstraction for Use.
     Roulette.setProvider(web3.currentProvider);
@@ -53,13 +43,29 @@ window.App = {
       accounts = accs;
       account = accounts[0];
 
-      self.refreshBalance();
     });
+
+    var roulette;
+    Roulette.deployed().then(function(instance) {
+      roulette = instance;
+      var pnum = document.getElementById("playernum");
+      var curturn = document.getElementById("currentturn");
+      var bin = document.getElementById("buyin");
+      var numlive = document.getElementById("numalive");
+      pnum.innerText = "Number of Players: " + roulette.numOfPlayers.call(account, {from: account});
+      curturn.innerText = "Current Turn: " + rContract.turn.call(account, {from: account});
+      bin.innerText = "Buy-In: " + rContract.buyin.call(account, {from: account});
+      numlive.innerText = "Number of Players: " + rContract.numAlive.call(account, {from: account});
+      return roulette.numOfPlayers.call(account, {from: account});
+    });
+
+    
   },
 
 
 
   join: function() {
+
     var pnum = document.getElementById("playernum");
     rContract.addPlayer.sendTransaction({gas:10000000});
   },
@@ -69,8 +75,19 @@ window.App = {
     rContract.spinRoulette();
   },
 
-  cont: function() {
-    return rContract;
+  // cont: function() {
+  //   Roulette.deployed().then(function(instance) {
+  //     roulette = instance;
+  //     return roulette.numOfPlayers.call(account, {from: account});
+  //   }
+  // }
+
+  getContract: function() {
+    var roulette;
+    Roulette.deployed().then(function(instance) {
+      roulette = instance;
+      return roulette.numOfPlayers.call(account, {from: account});
+    });
   }
 
 
