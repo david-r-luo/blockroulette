@@ -15,18 +15,19 @@ contract Roulette {
 
     modifier isOwner (address owner) {if(msg.sender == owner) {_;}}
 
-    address owner;
+    address public owner;
     
     mapping (uint => address) public playerNum;
     mapping (address => Player) public playerList;
     
-    uint numOfPlayers;
-    uint turn;
-    uint buyin;
-    uint maxPlayers;
-    uint numAlive;
-    uint pot;
-    State state;
+    uint public numOfPlayers;
+    uint public turn;
+    uint public buyin;
+    uint public maxPlayers;
+    uint public numAlive;
+    uint public pot;
+    uint private randHelper;
+    State public state;
 
     enum State {Lobby, Playing}
     
@@ -38,9 +39,10 @@ contract Roulette {
         state = State.Lobby;
         maxPlayers = 5;
         numAlive = 5;
+        randHelper = 0;
     }
 
-    function spinRoulette() {
+    function spinRoulette(uint rand) {
         if (numAlive == 1) {
             revert();
         }
@@ -53,8 +55,10 @@ contract Roulette {
             revert();
         }
 
+        randHelper += uint(sha256(rand));
 
-        if (uint(block.blockhash(block.number-1)) % maxPlayers + 1 == 1) {
+
+        if ((uint(block.blockhash(block.number-1))+randHelper) % maxPlayers + 1 == 1) {
             playerList[msg.sender].alive = false;
             turn = playerList[msg.sender].nextTurn;
             playerList[playerNum[playerList[msg.sender].prevTurn]].nextTurn = playerList[msg.sender].nextTurn;
@@ -86,7 +90,7 @@ contract Roulette {
         }
         
         state = State.Playing;
-        turn = uint(block.blockhash(block.number-1)) % maxPlayers + 1;
+        turn = (uint(block.blockhash(block.number-1))+randHelper) % maxPlayers + 1;
     }
     
     function getPot() returns (uint) {
@@ -107,7 +111,7 @@ contract Roulette {
         return buyin;
     }
 
-    function addPlayer() payable {
+    function addPlayer(uint rand) payable {
         if (numOfPlayers >= maxPlayers) revert();
 
         if (state == State.Playing) revert();
@@ -116,6 +120,7 @@ contract Roulette {
 
         if (msg.value < buyin) revert();
 
+        randHelper += uint(sha256(rand));
         numOfPlayers += 1;
         playerNum[numOfPlayers] = msg.sender;
         uint pre = numOfPlayers - 1;
@@ -165,5 +170,9 @@ contract Roulette {
 
     function getPlayer(address addr) returns (address, bool, uint, uint, uint) {
         return (playerList[addr].addr, playerList[addr].alive, playerList[addr].balance, playerList[addr].prevTurn, playerList[addr].nextTurn);
+    }
+
+    function getRandHelper() returns (uint) {
+    	return randHelper;
     }
 }

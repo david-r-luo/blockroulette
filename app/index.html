@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Roulette - Blockchain @ Berkeley</title>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <script src="./app.js"></script>
+</head>
+<body>
+  <h1>Roulette</h1>
+  <h3 id="playernum"> Num of Players</h3>
+  <h3 id="currentturn"> Current Turn: </h3>
+  <h3 id="buyin"> Buy-in: </h3>
+  <h3 id="numalive"> Number of Alive</h3>
+
+
+  <br>
+  <form>
+    <label>
+      Join:
+      <input type="number" id="join-value"/>
+    </label>
+  </form>
+  <br><button id="send" onclick="App.spin()">Join Game</button>
+  <br><br><form>
+    <label>
+      Spin:
+      <input type="number" id="spin-value"/>
+    </label>
+  </form>
+  <br><button id="send" onclick="App.spin()">Spin</button>
+
+
+  <br>
+</body>
+</html>
