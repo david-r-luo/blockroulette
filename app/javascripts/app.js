@@ -55,7 +55,7 @@ window.App = {
       pnum.innerText = "Number of Players: " + roulette.numOfPlayers.call(account, {from: account});
       curturn.innerText = "Current Turn: " + rContract.turn.call(account, {from: account});
       bin.innerText = "Buy-In: " + rContract.buyin.call(account, {from: account});
-      numlive.innerText = "Number of Players: " + rContract.numAlive.call(account, {from: account});
+      numlive.innerText = "Number of Alive: " + rContract.numAlive.call(account, {from: account});
       return roulette.numOfPlayers.call(account, {from: account});
     });
 
