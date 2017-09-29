@@ -140,7 +140,7 @@ contract Roulette {
 
         numOfPlayers -= 1;
         uint val = playerList[msg.sender].balance;
-        playerList[msg.sender] -= val;
+        playerList[msg.sender].balance = 0;
         msg.sender.transfer(val);
         return val;
     }
