@@ -4,12 +4,15 @@ import "../stylesheets/app.css";
 // Import libraries we need.
 import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract'
+import {rContract, acct, balance} from './EthereumSetup'; 
 
 // Import our contract artifacts and turn them into usable abstractions.
-import metacoin_artifacts from '../../build/contracts/MetaCoin.json'
+import artifacts from '../../build/contracts/Roulette.json'
 
 // MetaCoin is our usable abstraction, which we'll use through the code below.
-var MetaCoin = contract(metacoin_artifacts);
+var Roulette = contract(artifacts);
+
+
 
 // The following code is simple to show off interacting with your contracts.
 // As your needs grow you will likely need to change its form and structure.
@@ -21,8 +24,9 @@ window.App = {
   start: function() {
     var self = this;
 
+
     // Bootstrap the MetaCoin abstraction for Use.
-    MetaCoin.setProvider(web3.currentProvider);
+    Roulette.setProvider(web3.currentProvider);
 
     // Get the initial account balance so it can be displayed.
     web3.eth.getAccounts(function(err, accs) {
@@ -39,59 +43,55 @@ window.App = {
       accounts = accs;
       account = accounts[0];
 
-      self.refreshBalance();
     });
-  },
 
-  setStatus: function(message) {
-    var status = document.getElementById("status");
-    status.innerHTML = message;
-  },
-
-  refreshBalance: function() {
-    var self = this;
-
-    var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta.getBalance.call(account, {from: account});
-    }).then(function(value) {
-      var balance_element = document.getElementById("balance");
-      balance_element.innerHTML = value.valueOf();
-    }).catch(function(e) {
-      console.log(e);
-      self.setStatus("Error getting balance; see log.");
+    var roulette;
+    Roulette.deployed().then(function(instance) {
+      roulette = instance;
+      var pnum = document.getElementById("playernum");
+      var curturn = document.getElementById("currentturn");
+      var bin = document.getElementById("buyin");
+      var numlive = document.getElementById("numalive");
+      pnum.innerText = "Number of Players: " + roulette.numOfPlayers.call(account, {from: account});
+      curturn.innerText = "Current Turn: " + rContract.turn.call(account, {from: account});
+      bin.innerText = "Buy-In: " + rContract.buyin.call(account, {from: account});
+      numlive.innerText = "Number of Alive: " + rContract.numAlive.call(account, {from: account});
+      return roulette.numOfPlayers.call(account, {from: account});
     });
+
+    
   },
 
-  sendCoin: function() {
-    var self = this;
 
-    var amount = parseInt(document.getElementById("amount").value);
-    var receiver = document.getElementById("receiver").value;
 
-    this.setStatus("Initiating transaction... (please wait)");
+  join: function() {
 
-    var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta.sendCoin(receiver, amount, {from: account});
-    }).then(function() {
-      self.setStatus("Transaction complete!");
-      self.refreshBalance();
-    }).catch(function(e) {
-      console.log(e);
-      self.setStatus("Error sending coin; see log.");
-    });
+    var pnum = document.getElementById("playernum");
+    rContract.addPlayer.sendTransaction({gas:10000000});
   },
+
+  spin: function() {
+
+    rContract.spinRoulette();
+  },
+
+  // cont: function() {
+  //   Roulette.deployed().then(function(instance) {
+  //     roulette = instance;
+  //     return roulette.numOfPlayers.call(account, {from: account});
+  //   }
+  // }
 
   getContract: function() {
-    var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta;
+    var roulette;
+    Roulette.deployed().then(function(instance) {
+      roulette = instance;
+      return roulette.numOfPlayers.call(account, {from: account});
     });
   }
+
+
+
 };
 
 window.addEventListener('load', function() {
